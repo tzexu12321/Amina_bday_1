@@ -1,0 +1,503 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Happy Birthday ❤️</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        overflow-y: auto; /* allow scroll in fullscreen */
+        min-height: 100vh; /* better than fixed height */
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      }
+
+      .container {
+        position: relative;
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+      }
+
+      /* Floating hearts background */
+      .hearts-container {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        pointer-events: none;
+      }
+
+      .heart {
+        position: absolute;
+        font-size: 30px;
+        opacity: 0;
+        animation: float 10s infinite;
+      }
+
+      @keyframes float {
+        0% {
+          transform: translateY(100vh) rotate(0deg);
+          opacity: 0;
+        }
+        10% {
+          opacity: 0.6;
+        }
+        90% {
+          opacity: 0.6;
+        }
+        100% {
+          transform: translateY(-100px) rotate(360deg);
+          opacity: 0;
+        }
+      }
+
+      /* Slide container */
+      .slides-wrapper {
+        position: relative;
+        width: 100%;
+        max-width: 900px;
+        padding: 20px;
+        padding-bottom: 120px; /* space for navigation buttons */
+      }
+
+      .slide {
+        position: absolute;
+        width: 100%;
+        opacity: 0;
+        transform: translateX(100%) scale(0.8);
+        transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        pointer-events: none;
+      }
+
+      .slide.active {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+        position: relative;
+        pointer-events: auto;
+      }
+
+      .slide.prev {
+        transform: translateX(-100%) scale(0.8);
+      }
+
+      /* Card styling */
+      .card {
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(20px);
+        border-radius: 30px;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        padding: 60px 40px 120px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        text-align: center;
+        position: relative;
+
+        max-height: 80vh; /* keep card inside screen */
+        display: flex;
+        flex-direction: column;
+      }
+
+      .card::before {
+        content: "";
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(
+          45deg,
+          transparent,
+          rgba(255, 255, 255, 0.1),
+          transparent
+        );
+        animation: shine 3s infinite;
+      }
+
+      @keyframes shine {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      .icon-container {
+        width: 100px;
+        height: 100px;
+        margin: 0 auto 30px;
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 50px;
+        animation: pulse 2s infinite;
+        box-shadow: 0 10px 30px rgba(245, 87, 108, 0.4);
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.1);
+        }
+      }
+
+      .slide-title {
+        font-size: 3.5rem;
+        font-weight: bold;
+        color: white;
+        margin-bottom: 20px;
+        text-shadow: 2px 2px 20px rgba(0, 0, 0, 0.3);
+        line-height: 1.2;
+      }
+
+      .slide-subtitle {
+        font-size: 1.5rem;
+        color: rgba(255, 255, 255, 0.9);
+        margin-bottom: 30px;
+        font-style: italic;
+      }
+
+      .slide-content {
+        font-size: 1.2rem;
+        color: rgba(255, 255, 255, 0.85);
+        line-height: 1.8;
+        max-width: 600px;
+        margin: 0 auto;
+
+        overflow-y: auto; /* enable scroll */
+        flex: 1; /* take remaining space */
+      }
+
+      /* Navigation */
+      .navigation {
+        position: fixed;
+        bottom: 40px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        align-items: center;
+        gap: 30px;
+        z-index: 100;
+      }
+
+      .nav-btn {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(10px);
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        color: white;
+        font-size: 20px;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .nav-btn:hover {
+        background: rgba(255, 255, 255, 0.3);
+        transform: scale(1.1);
+      }
+
+      .nav-btn:active {
+        transform: scale(0.95);
+      }
+
+      .dots {
+        display: flex;
+        gap: 15px;
+      }
+
+      .dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.4);
+        cursor: pointer;
+        transition: all 0.3s;
+      }
+
+      .dot.active {
+        background: white;
+        transform: scale(1.3);
+      }
+
+      .dot:hover {
+        background: rgba(255, 255, 255, 0.7);
+        transform: scale(1.2);
+      }
+
+      /* Counter */
+      .counter {
+        position: fixed;
+        top: 30px;
+        right: 30px;
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 1rem;
+        z-index: 100;
+      }
+
+      /* Responsive */
+      @media (max-width: 768px) {
+        .slide-title {
+          font-size: 2.5rem;
+        }
+        .slide-subtitle {
+          font-size: 1.2rem;
+        }
+        .card {
+          padding: 40px 30px;
+        }
+        .icon-container {
+          width: 80px;
+          height: 80px;
+          font-size: 40px;
+        }
+      }
+
+      /* Different gradient backgrounds for each slide */
+      .container.slide-0 {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      }
+      .container.slide-1 {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      }
+      .container.slide-2 {
+        background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+      }
+
+      .slide-0 .icon-container {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      }
+      .slide-1 .icon-container {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      }
+      .slide-2 .icon-container {
+        background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container slide-0" id="mainContainer">
+      <!-- Floating hearts -->
+      <div class="hearts-container" id="heartsContainer"></div>
+
+      <!-- Slides -->
+      <div class="slides-wrapper">
+        <!-- Slide 1 -->
+        <div class="slide active slide-0">
+          <div class="card">
+            <div class="icon-container">❤️</div>
+            <h1 class="slide-title">Happy Birthday</h1>
+            <p class="slide-subtitle">Хамгийн гайхалтай хүнд</p>
+            <p class="slide-content">
+              Hairt Aminad zoriulla Sn bnuu hairt min. Onoodor minii hamgiin
+              durtai odr monoos mon bile. Uchir ni enhuu jijg horwood mash
+              uzesgelent shn hun mendelsen bilee ter hun ni ci.Bi boldog bol
+              edgeer zahiag garaar bichij ogdog bolch. Minii hamgiin
+              yrih,yriltsah,oilgoh,oilguulah durtai hun ni ci shuudee.Bi camdaan
+              mash ih hairtai ghdee nuugd yhw ci nmg ovtgodog uiluuldagaa ghdee
+              l bi tsaanaasaa martd uuchlad bdag hairtai bolhr iim ym tuulah
+              ystoin boluu hoyulaa az jargaltai amidrah uy irh bhaa enen dr neeh
+              ih ym bicij cdsangue zuer l hairtai ym shuu bitii orhij ywrai ene
+              minii yrisan suulin ih cat bh bolnoo minii nuh medremj enend
+              bagtsan. Bi yg unndee cms l tgj ih ym husdeg ym bnlee ooriigo
+              ontsgoi hun gj medrmeer nadd odr bolgn camtai adil soriltuud
+              taardg odr bur bi ymand neeh tgj gomddoggu gants camd l hunees ih
+              ym husdeggu gants cams l hair nehdeg hetsuu odriin draa bi ydag
+              geech tewcdeg zawgu bhiig hiceedeg zailuuldaa camd l erhelcihged
+              taiwshruululkaal tgj ih ym bichdeg ymshuudee. Ter ih catiig bi
+              zowhn gants camd l zoriulj bicdeg ymbshuudee ygd geul nmg oulgooso
+              gsndee l. Hetsuu odriin dra ci nadtai muuhai haritsah uy garnaa
+              ghde ehlld bi dda minii hair nadd l ingdeg gj boddog ghdee ygd ch
+              ym bi tgl gomdod uild bdag ene bdlaara her udaan ywj cadh boldoo
+              bitgii ed nariig unshaad shuumjleereii. Ennes oor helh zondoo ym
+              bga ch ymshig ghdee garj irku bn yu gdgin medkuch dotr bgad bn cmg
+              oloosoi gj husjiin tgd bi camd hairtai shuu yunaas ch iluu torsn
+              odriin mnd hurgey hhe
+            </p>
+          </div>
+        </div>
+
+        <!-- Slide 2 -->
+        <div class="slide slide-1">
+          <div class="card">
+            <div class="icon-container">✨</div>
+            <h1 class="slide-title">Чамтай өнгөрүүлсэн мөч бүр</h1>
+            <p class="slide-subtitle">
+              Миний нандигнан хадгалдаг үнэт эрдэнэ 💛
+            </p>
+            <p class="slide-content">
+              Camtai anh taniltssan ter aztai odroos ehluulen anhnii negnee
+              harsn odr, anhnii voice call, video call iig bi martadgue hamgiin
+              dursamjtai zuil bolhr. Ygd uulzasnaa durdku bn gjuuu ter ed nariin
+              dund bagtahgue oor tuwshniii az jargal yum shu de hairt min teriig
+              ugeer ilerhiileh bolomjgu ym bnaa. Zuer l haraad setgel dotr yu
+              bolsiin buu med bayrlah uilah gemshih dogdloh sandrah icih zerg
+              bugd l neg dor ylgarsan hamgiin goy odr 10.20 hzee ch
+              martagdashgui odruud 12.12 10.20 2.12 geel ci harldaa aimr goy
+              odruud bgzdee ghdee hen ni ch za ene odr uulzi uyrhi gj
+              tolowloogu. Bugd l huvi tawilan burhan bgz ucrah ystoi humuusig yj
+              iigel ucruuldag bolotoii bi tiim l aztai hun ym bnn. Hair ni odoo
+              uilj bn ygd geul bi eniig camruu ywuuljahad ci ed nariig unshin gj
+              bodhr l hairtai shuu hairt min unheer ih hairtai shuuu
+            </p>
+          </div>
+        </div>
+
+        <!-- Slide 3 -->
+        <div class="slide slide-2">
+          <div class="card">
+            <div class="icon-container">💝</div>
+            <h1 class="slide-title">Энэ бол бидний 2 дахь жил</h1>
+            <p class="slide-subtitle">
+              Хамтдаа сайхан дурсамжууд бүтээцгээе 💫
+            </p>
+            <p class="slide-content">
+              Hoyulaa uyrheed 3 aad sar bolj bn. Cinii torsn odriig anh udaaga
+              temdeglej bn. Bi camtai hamt temdegleeguu ch gsen end ci nadtai
+              hamt laa uleej bgam shuu. Camtai bi cinii 18-100 hurtelh laanii
+              toonuudiig cin tsugluulii.Hoyula hamgiin goy2 dursamj buteej neg
+              negnee hairaar dutaahgu baiyyyy. Bi camtai bainga hamt bmar bn
+              uchir ni camd bi hairtaiiiiiiii ysan ch hairtai bh l bolnooooooo
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Navigation -->
+      <div class="navigation">
+        <button class="nav-btn" id="prevBtn">←</button>
+        <div class="dots">
+          <div class="dot active" data-slide="0"></div>
+          <div class="dot" data-slide="1"></div>
+          <div class="dot" data-slide="2"></div>
+        </div>
+        <button class="nav-btn" id="nextBtn">→</button>
+      </div>
+
+      <!-- Counter -->
+      <div class="counter">
+        <span id="currentSlide">1</span> / <span id="totalSlides">3</span>
+      </div>
+    </div>
+
+    <script>
+      // Slide management
+      let currentSlide = 0;
+      const totalSlides = 3;
+      const slides = document.querySelectorAll(".slide");
+      const dots = document.querySelectorAll(".dot");
+      const container = document.getElementById("mainContainer");
+      const currentSlideEl = document.getElementById("currentSlide");
+
+      function updateSlide(newSlide) {
+        // Remove active class from current slide
+        slides[currentSlide].classList.remove("active");
+        slides[currentSlide].classList.add("prev");
+        dots[currentSlide].classList.remove("active");
+
+        // Update current slide
+        currentSlide = newSlide;
+
+        // Add active class to new slide
+        slides[currentSlide].classList.remove("prev");
+        slides[currentSlide].classList.add("active");
+        dots[currentSlide].classList.add("active");
+
+        // Update background gradient
+        container.className = "container slide-" + currentSlide;
+
+        // Update counter
+        currentSlideEl.textContent = currentSlide + 1;
+      }
+
+      function nextSlide() {
+        const newSlide = (currentSlide + 1) % totalSlides;
+        updateSlide(newSlide);
+      }
+
+      function prevSlide() {
+        const newSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+        updateSlide(newSlide);
+      }
+
+      // Event listeners
+      document.getElementById("nextBtn").addEventListener("click", nextSlide);
+      document.getElementById("prevBtn").addEventListener("click", prevSlide);
+
+      // Dot navigation
+      dots.forEach((dot) => {
+        dot.addEventListener("click", () => {
+          const slideIndex = parseInt(dot.getAttribute("data-slide"));
+          updateSlide(slideIndex);
+        });
+      });
+
+      // Keyboard navigation
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "ArrowRight") nextSlide();
+        if (e.key === "ArrowLeft") prevSlide();
+      });
+
+      // Touch swipe support
+      let touchStartX = 0;
+      let touchEndX = 0;
+
+      document.addEventListener("touchstart", (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+      });
+
+      document.addEventListener("touchend", (e) => {
+        touchEndX = e.changedTouches[0].screenX;
+        handleSwipe();
+      });
+
+      function handleSwipe() {
+        if (touchEndX < touchStartX - 50) nextSlide();
+        if (touchEndX > touchStartX + 50) prevSlide();
+      }
+
+      // Create floating hearts
+      function createHeart() {
+        const heartsContainer = document.getElementById("heartsContainer");
+        const heart = document.createElement("div");
+        heart.className = "heart";
+        heart.textContent = "❤️";
+        heart.style.left = Math.random() * 100 + "%";
+        heart.style.animationDelay = Math.random() * 5 + "s";
+        heart.style.animationDuration = 8 + Math.random() * 4 + "s";
+        heart.style.fontSize = 20 + Math.random() * 30 + "px";
+        heartsContainer.appendChild(heart);
+
+        // Remove heart after animation
+        setTimeout(() => {
+          heart.remove();
+        }, 12000);
+      }
+
+      // Create hearts periodically
+      setInterval(createHeart, 800);
+
+      // Create initial hearts
+      for (let i = 0; i < 15; i++) {
+        setTimeout(createHeart, i * 300);
+      }
+    </script>
+  </body>
+</html>
